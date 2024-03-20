@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.26",
@@ -23,6 +24,8 @@
   "dependencies": {
     "@types/multer": "^1.4.11",
     "@types/sharp": "^0.32.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "multer": "^1.4.5-lts.1",
     "sharp": "^0.33.2"
   }

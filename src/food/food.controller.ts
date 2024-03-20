@@ -10,7 +10,7 @@ export const readAllData = async (req: Request, res: Response) => {
     const food = await Food
       .find()
       .select('-__v')
-    return res.status(200).json({ data: food })
+    return res.status(200).json(food)
   } catch (error) {
     return res.status(500).json({ error })
   }
@@ -20,17 +20,21 @@ export const createData = async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ message: 'Image file is required' });
   }
-console.log(req.body)
+  const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
-    const compressedImage = await compressImage(req.file.buffer);
     const food = new Food({
       name: req.body.name,
-      image: compressedImage,
-      description: req.body.description
+      image: imageUrl, // Store only the filename
+      description: req.body.description,
+      star: req.body.star,
+      price: req.body.price,
+      foodType: req.body.foodType,
     });
     const newFood = await food.save();
-    res.status(201).json(newFood);
+
+
+    res.status(201).json({ ...newFood.toJSON() });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
-}
+};
