@@ -1,15 +1,15 @@
 import { Router } from 'express'
-import { createData, readAllData } from './food.controller'
+import { createData, deleteData, readAllData, updateData } from './food.controller'
 import multer from 'multer';
 import path from 'path';
 
 const routerFood = Router()
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, './uploads/'); // File uploads destination
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
   }
 });
@@ -29,5 +29,7 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 routerFood.get('', readAllData)
 routerFood.post('', upload.single('image'), createData)
+routerFood.put('/:id', upload.single('image'), updateData)
+routerFood.delete('/:id', deleteData)
 
 export { routerFood }
