@@ -4,7 +4,10 @@ import mongoose from 'mongoose';
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import { routerFood } from './food/food.route';
-import { routerFoodType } from './food-type/food-type';
+import { routerFoodType } from './food-type/food-type.route';
+import { routerGallery } from './gallery/gallery.route';
+import { routerComment } from './comment/comment.route';
+import { routerOurNew } from './our-new/our-new.route';
 
 const app = express();
 app.use(cors());
@@ -23,6 +26,9 @@ mongoose.connect('mongodb+srv://newuser:rening007@crud.057ti.mongodb.net/rest-fo
 
 app.use('/food', routerFood);
 app.use('/food-type', routerFoodType);
+app.use('/gallery', routerGallery);
+app.use('/comment', routerComment);
+app.use('/our-new', routerOurNew);
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);

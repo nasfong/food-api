@@ -1,17 +1,16 @@
-// src/routes/foodType.ts
+// src/routes/gallery.ts
 import express, { Request, Response } from 'express';
-import FoodType from './food-type.model'; // Assuming you have a FoodType model defined similarly to the Item model
-import path from 'path';
+import Gallery from './gallery.model'; // Assuming you have a Gallery model defined similarly to the Item model
+import { compressImage } from '../utils/utils';
 import fs from 'fs'
+import path from 'path';
 
-
-// GET all foodType items
 export const readAllData = async (req: Request, res: Response) => {
   try {
-    const foodType = await FoodType
+    const gallery = await Gallery
       .find()
       .select('-__v')
-    return res.status(200).json(foodType)
+    return res.status(200).json(gallery)
   } catch (error) {
     return res.status(500).json({ error })
   }
@@ -23,43 +22,44 @@ export const createData = async (req: Request, res: Response) => {
   }
   const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
-    const foodType = new FoodType({
-      name: req.body.name,
-      image: imageUrl
+    const gallery = new Gallery({
+      image: imageUrl, // Store only the filename
     });
-    const newFood = await foodType.save();
-    res.status(201).json(newFood);
+    const newData = await gallery.save();
+
+
+    res.status(201).json({ ...newData.toJSON() });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 export const updateData = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const url = req.protocol + '://' + req.get("host") + '/uploads/';
-    const foodType = await FoodType.findById(id);
-    if (!foodType) {
+
+    const gallery = await Gallery.findById(id);
+    if (!gallery) {
       return res.status(404).json({ message: 'Not found' });
     }
 
     if (req.file) {
       // Remove previous image file if it exists
-      const previousImage = foodType.image.replace(url, "");
+      const previousImage = gallery.image.replace(url, "");
       const previousImagePath = path.join(__dirname, '../../uploads/', previousImage);
       if (fs.existsSync(previousImagePath)) {
         fs.unlinkSync(previousImagePath);
       }
-      foodType.image = url + req.file.filename;
+
+      // Update the image URL
+      gallery.image = url + req.file.filename;
     }
 
-    if (req.body.name !== undefined) {
-      foodType.name = req.body.name;
-    }
-    const updatedFood = await foodType.save();
+    const updated = await gallery.save();
     return res.status(200).json({
       status: 200,
-      data: updatedFood
+      data: updated
     });
   } catch (error) {
     console.error('Error updating data:', error);
@@ -72,11 +72,11 @@ export const deleteData = async (req: Request, res: Response) => {
   try {
     const url = req.protocol + '://' + req.get("host") + '/uploads/'
     const id = req.params.id;
-    const foodType = await FoodType.findByIdAndDelete(id);
-    if (!foodType) {
+    const gallery = await Gallery.findByIdAndDelete(id);
+    if (!gallery) {
       return res.status(404).json({ message: 'Not found' });
     }
-    const image = foodType && foodType.image.replace(url, "") || ''
+    const image = gallery && gallery.image.replace(url, "") || ''
     const imagePath = path.join(__dirname, `../../uploads/${image}`);
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
