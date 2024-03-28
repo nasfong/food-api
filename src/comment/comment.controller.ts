@@ -5,8 +5,15 @@ import Comment from './comment.model';
 // GET all comment items
 export const readAllData = async (req: Request, res: Response) => {
   try {
+    let query = {};
+
+    if (req.query) {
+      if (req.query.food) {
+        query = { food: req.query.food }; // Case-insensitive search for foodType
+      }
+    }
     const comment = await Comment
-      .find()
+      .find(query)
       .select('-__v')
     return res.status(200).json(comment)
   } catch (error) {
