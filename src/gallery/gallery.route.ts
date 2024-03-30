@@ -25,7 +25,12 @@ const fileFilter = (req: any, file: any, cb: any) => {
 };
 
 // Initialize multer upload with configuration
-const upload = multer({ storage: storage, fileFilter: fileFilter });
+const upload = multer({
+  storage: storage, fileFilter: fileFilter,
+  // limits: {
+  //   fileSize: 300 * 1024
+  // }
+});
 
 routerGallery.get('', readAllData)
 routerGallery.post('', upload.single('image'), createData)

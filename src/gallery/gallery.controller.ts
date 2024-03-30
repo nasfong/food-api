@@ -20,6 +20,9 @@ export const createData = async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ message: 'Image file is required' });
   }
+  if (req.file.size > 0.3 * 1024 * 1024) {
+    return res.status(400).json({ message: 'File size exceeds the limit' });
+  }
   const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
     const gallery = new Gallery({
@@ -44,6 +47,10 @@ export const updateData = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Not found' });
     }
 
+    if (req.file && req.file.size > 0.3 * 1024 * 1024) {
+      return res.status(400).json({ message: 'File size exceeds the limit' });
+    }
+    
     if (req.file) {
       // Remove previous image file if it exists
       const previousImage = gallery.image.replace(url, "");
@@ -69,6 +76,9 @@ export const updateData = async (req: Request, res: Response) => {
 
 
 export const deleteData = async (req: Request, res: Response) => {
+  // const imagePath = path.join(__dirname, `../../uploads/1711135130439.JPG`);
+  
+  // console.log(imagePath,fs.existsSync(imagePath))
   try {
     const url = req.protocol + '://' + req.get("host") + '/uploads/'
     const id = req.params.id;
