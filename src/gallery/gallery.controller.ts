@@ -87,7 +87,7 @@ export const deleteData = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Not found' });
     }
     const image = gallery && gallery.image.replace(url, "") || ''
-    const imagePath = path.join(__dirname, `../../uploads/${image}`);
+    const imagePath = path.join(__dirname, `../uploads/${image}`);
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       return res.status(200).json({ message: 'Deleted successfully' });
