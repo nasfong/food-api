@@ -18,7 +18,7 @@ const ItemSchema: Schema = new Schema({
   image: { type: String, required: true },
   description: { type: String },
   star: { type: Number },
-  price: { type: String },
+  price: { type: Number },
   foodType: { type: Schema.Types.ObjectId, ref: 'FoodType', required: true },
   chef: { type: Boolean, default: false },
 });
