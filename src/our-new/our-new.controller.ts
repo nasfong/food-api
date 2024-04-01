@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import OurNew from './our-new.model';
 import path from 'path';
 import fs from 'fs'
+import { dir } from '../utils/upload';
 
 export const readAllData = async (req: Request, res: Response) => {
   try {
@@ -45,7 +46,7 @@ export const updateData = async (req: Request, res: Response) => {
     if (req.file) {
       // Remove previous image file if it exists
       const previousImage = ourNew.image.replace(url, "");
-      const previousImagePath = path.join(__dirname, '../../uploads/', previousImage);
+      const previousImagePath = `${dir}/${previousImage}`;
       if (fs.existsSync(previousImagePath)) {
         fs.unlinkSync(previousImagePath);
       }
@@ -82,7 +83,7 @@ export const deleteData = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Not found' });
     }
     const image = ourNew && ourNew.image.replace(url, "") || ''
-    const imagePath = path.join(__dirname, `../../uploads/${image}`);
+    const imagePath = `${dir}/${image}`
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       return res.status(200).json({ message: 'Deleted successfully' });

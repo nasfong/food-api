@@ -4,6 +4,7 @@ import Gallery from './gallery.model'; // Assuming you have a Gallery model defi
 import { compressImage } from '../utils/utils';
 import fs from 'fs'
 import path from 'path';
+import { dir } from '../utils/upload';
 
 export const readAllData = async (req: Request, res: Response) => {
   try {
@@ -21,7 +22,7 @@ export const createData = async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Image file is required' });
   }
   if (req.file.size > 0.3 * 1024 * 1024) {
-    return res.status(400).json({ message: 'File size exceeds the limit' });
+    return res.status(400).json({ message: 'File size 300KB exceeds the limit' });
   }
   const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
@@ -54,7 +55,7 @@ export const updateData = async (req: Request, res: Response) => {
     if (req.file) {
       // Remove previous image file if it exists
       const previousImage = gallery.image.replace(url, "");
-      const previousImagePath = path.join(__dirname, '../../uploads/', previousImage);
+      const previousImagePath = `${dir}/${previousImage}`;
       if (fs.existsSync(previousImagePath)) {
         fs.unlinkSync(previousImagePath);
       }
@@ -76,9 +77,6 @@ export const updateData = async (req: Request, res: Response) => {
 
 
 export const deleteData = async (req: Request, res: Response) => {
-  // const imagePath = path.join(__dirname, `../../uploads/1711135130439.JPG`);
-  
-  // console.log(imagePath,fs.existsSync(imagePath))
   try {
     const url = req.protocol + '://' + req.get("host") + '/uploads/'
     const id = req.params.id;
@@ -87,7 +85,7 @@ export const deleteData = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Not found' });
     }
     const image = gallery && gallery.image.replace(url, "") || ''
-    const imagePath = path.join(__dirname, `../uploads/${image}`);
+    const imagePath = `${dir}/${image}`
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       return res.status(200).json({ message: 'Deleted successfully' });

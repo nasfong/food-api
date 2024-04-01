@@ -3,6 +3,7 @@ import express, { Request, Response } from 'express';
 import Food from './food.model'; // Assuming you have a Food model defined similarly to the Item model
 import fs from 'fs'
 import path from 'path';
+import { dir } from '../utils/upload';
 
 // GET all food items
 export const readAllData = async (req: Request, res: Response) => {
@@ -41,6 +42,20 @@ export const readAllData = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 }
+
+export const readRandomData = async (req: Request, res: Response) => {
+  try {
+    const limit = Number(req.params.limit);
+    const randomFoodTypes = await Food.aggregate([
+      { $sample: { size: limit } } // Sample 6 random documents
+    ]);
+
+    return res.status(200).json(randomFoodTypes);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+}
+
 export const createData = async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ message: 'Image file is required' });
@@ -78,7 +93,7 @@ export const updateData = async (req: Request, res: Response) => {
     if (req.file) {
       // Remove previous image file if it exists
       const previousImage = food.image.replace(url, "");
-      const previousImagePath = path.join(__dirname, '../../uploads/', previousImage);
+      const previousImagePath = `${dir}/${previousImage}`;
       if (fs.existsSync(previousImagePath)) {
         fs.unlinkSync(previousImagePath);
       }
@@ -129,7 +144,7 @@ export const deleteData = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Not found' });
     }
     const image = food && food.image.replace(url, "") || ''
-    const imagePath = path.join(__dirname, `../../uploads/${image}`);
+    const imagePath = `${dir}/${image}`
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       return res.status(200).json({ message: 'Deleted successfully' });

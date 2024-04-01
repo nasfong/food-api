@@ -8,16 +8,23 @@ import { routerFoodType } from './food-type/food-type.route';
 import { routerGallery } from './gallery/gallery.route';
 import { routerComment } from './comment/comment.route';
 import { routerOurNew } from './our-new/our-new.route';
+import * as dotenv from 'dotenv';
+
+dotenv.config()
 
 const app = express();
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'))
+
 const PORT = process.env.PORT || 5000;
+const DATABASE_URL = process.env.DATABASE_URL || ''
 
 app.use('/uploads', express.static('uploads'));
 // Connect to MongoDB using Mongoose
-mongoose.connect('mongodb+srv://newuser:rening007@crud.057ti.mongodb.net/rest-food?retryWrites=true&w=majority', {
+mongoose.connect(DATABASE_URL, {
   // useNewUrlParser: true,
   // useUnifiedTopology: true,
 })
