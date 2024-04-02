@@ -26,7 +26,8 @@ export const createData = async (req: Request, res: Response) => {
   try {
     const foodType = new FoodType({
       name: req.body.name,
-      image: imageUrl
+      description: req.body.description,
+      image: imageUrl,
     });
     const newFood = await foodType.save();
     res.status(201).json(newFood);
