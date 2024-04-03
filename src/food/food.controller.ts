@@ -56,6 +56,39 @@ export const readRandomData = async (req: Request, res: Response) => {
   }
 }
 
+export const readRelateData = async (req: Request, res: Response) => {
+  try {
+    const food = await Food.find()
+      .select('-__v')
+      .populate('foodType')
+      .lean();
+
+    if (!food) {
+      return res.status(404).json({ error: "No food found" });
+    }
+
+    const organizedData = {} as any;
+
+    // Iterate over the original array and organize items by foodType _id
+    food.forEach((item: any) => {
+      if (item.foodType && item.foodType._id) {
+        if (!organizedData[item.foodType._id]) {
+          organizedData[item.foodType._id] = { parent: { ...item.foodType }, child: [] };
+        }
+        organizedData[item.foodType._id].child.push(item);
+      }
+    });
+
+    // Convert the organized data into an array
+    const result = Object.values(organizedData);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 export const createData = async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ message: 'Image file is required' });
