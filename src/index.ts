@@ -9,6 +9,7 @@ import { routerGallery } from './gallery/gallery.route';
 import { routerComment } from './comment/comment.route';
 import { routerOurNew } from './our-new/our-new.route';
 import * as dotenv from 'dotenv';
+import { routerEmail } from './email/email';
 
 dotenv.config()
 
@@ -36,7 +37,7 @@ app.use('/food-type', routerFoodType);
 app.use('/gallery', routerGallery);
 app.use('/comment', routerComment);
 app.use('/our-new', routerOurNew);
-
+app.use('/email', routerEmail);
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');

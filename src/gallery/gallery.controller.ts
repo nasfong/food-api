@@ -1,9 +1,7 @@
 // src/routes/gallery.ts
 import express, { Request, Response } from 'express';
 import Gallery from './gallery.model'; // Assuming you have a Gallery model defined similarly to the Item model
-import { compressImage } from '../utils/utils';
 import fs from 'fs'
-import path from 'path';
 import { dir } from '../utils/upload';
 
 export const readAllData = async (req: Request, res: Response) => {
