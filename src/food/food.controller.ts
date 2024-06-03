@@ -10,7 +10,11 @@ export const readAllData = async (req: Request, res: Response) => {
   try {
     let query = {};
     let page = req.query.page ? parseInt(req.query.page as string) : 1; // default page 1
-    let pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string) : 10; // default page size 10
+    let pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string) : undefined; // default page size undefined
+
+    if (!pageSize) {
+      pageSize = Number.MAX_SAFE_INTEGER; // Set pageSize to a large number to retrieve all documents
+    }
 
     if (req.query) {
       if (req.query.foodType) {
