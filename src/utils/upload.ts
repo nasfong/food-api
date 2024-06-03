@@ -1,6 +1,8 @@
 import multer from "multer";
 import path from 'path';
 import fs from 'fs';
+import sharp from "sharp";
+import { NextFunction, Request, Response } from "express";
 
 const dir = 'public/uploads'
 
@@ -30,4 +32,26 @@ const upload = multer({
   // }
 });
 
-export { upload, dir }
+const compressImage = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.file) {
+    return next(); // Move to next middleware if no file is uploaded
+  }
+
+  try {
+    const imagePath = path.join(dir, req.file.filename);
+    await sharp(imagePath)
+      .resize({ width: 800 }) // Set the maximum width
+      .toFormat('jpeg') // Convert to JPEG format
+      .toFile(`${imagePath}.compressed.jpg`); // Save compressed image
+
+    fs.unlinkSync(imagePath); // Remove original image
+
+    req.file.filename = `${req.file.filename}.compressed.jpg`; // Update filename to compressed version
+  } catch (error) {
+    return res.status(400).json({ message: 'Failed to compress image' });
+  }
+
+  next();
+};
+
+export { upload, dir, compressImage }

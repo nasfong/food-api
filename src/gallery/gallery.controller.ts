@@ -19,9 +19,9 @@ export const createData = async (req: Request, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ message: 'Image file is required' });
   }
-  if (req.file.size > 0.3 * 1024 * 1024) {
-    return res.status(400).json({ message: 'File size 300KB exceeds the limit' });
-  }
+  // if (req.file.size > 0.3 * 1024 * 1024) {
+  //   return res.status(400).json({ message: 'File size 300KB exceeds the limit' });
+  // }
   const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
     const gallery = new Gallery({
