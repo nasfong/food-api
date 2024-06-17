@@ -1,8 +1,7 @@
 // src/routes/food.ts
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import Food from './food.model'; // Assuming you have a Food model defined similarly to the Item model
 import fs from 'fs'
-import path from 'path';
 import { dir } from '../utils/upload';
 
 // GET all food items
@@ -26,6 +25,9 @@ export const readAllData = async (req: Request, res: Response) => {
       if (req.query.chef) {
         query = { chef: req.query.chef }; // Case-insensitive search for chef
       }
+      if (req.query.promotion) {
+        query = { promotion: req.query.promotion }; // Case-insensitive search for promotion
+      }
       // You can add more parameters similarly
     }
 
@@ -44,6 +46,20 @@ export const readAllData = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
+  }
+}
+
+export const readLatestData = async (req: Request, res: Response) => {
+  try {
+    const limit = Number(req.params.limit);
+    const latestFoods = await Food.aggregate([
+      { $sort: { createDate: -1 } }, // Sort by createDate in descending order
+      { $limit: limit } // Limit the results to the specified limit
+    ]);
+
+    return res.status(200).json(latestFoods);
+  } catch (error) {
+    return res.status(500).json({ error });
   }
 }
 
@@ -105,8 +121,9 @@ export const createData = async (req: Request, res: Response) => {
       description: req.body.description,
       star: req.body.star,
       price: req.body.price,
-      chef: req.body.chef,
       foodType: req.body.foodType,
+      chef: req.body.chef,
+      promotion: req.body.promotion,
     });
     const newFood = await food.save();
 
@@ -157,6 +174,9 @@ export const updateData = async (req: Request, res: Response) => {
     }
     if (req.body.chef !== undefined) {
       food.chef = req.body.chef;
+    }
+    if (req.body.promotion !== undefined) {
+      food.promotion = req.body.promotion;
     }
     // Update other fields similarly
 

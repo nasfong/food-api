@@ -10,6 +10,7 @@ interface IFood extends Document {
   price: number
   foodType: mongoose.Types.ObjectId
   chef: boolean
+  promotion: boolean
 }
 
 // Define the schema for the document
@@ -21,6 +22,7 @@ const ItemSchema: Schema = new Schema({
   price: { type: Number },
   foodType: { type: Schema.Types.ObjectId, ref: 'FoodType', required: true },
   chef: { type: Boolean, default: false },
+  promotion: { type: Boolean, default: false },
 });
 
 // Create the Mongoose model
