@@ -44,14 +44,20 @@ const compressImage = async (req: Request, res: Response, next: NextFunction) =>
       .toFormat('jpeg') // Convert to JPEG format
       .toFile(`${imagePath}.compressed.jpg`); // Save compressed image
 
-    fs.unlinkSync(imagePath); // Remove original image
-
+    // fs.unlinkSync(imagePath); // Remove original image
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error("Error deleting original image:", err);
+        return res.status(400).json({ message: 'Failed to compress image' });
+      }
+      next();
+    });
     req.file.filename = `${req.file.filename}.compressed.jpg`; // Update filename to compressed version
   } catch (error) {
     return res.status(400).json({ message: 'Failed to compress image' });
   }
 
-  next();
+  // next();
 };
 
 export { upload, dir, compressImage }
