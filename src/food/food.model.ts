@@ -15,7 +15,7 @@ interface IFood extends Document {
 // Define the schema for the document
 const ItemSchema: Schema = new Schema({
   name: { type: String, required: true },
-  image: { type: String, required: true },
+  image: { type: String },
   description: { type: String },
   star: { type: Number },
   price: { type: Number },

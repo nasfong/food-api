@@ -94,10 +94,16 @@ export const readRelateData = async (req: Request, res: Response) => {
 }
 
 export const createData = async (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'Image file is required' });
+  // if (!req.file) {
+  //   return res.status(400).json({ message: 'Image file is required' });
+  // }
+  // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  let imageUrl
+  if (req.file) {
+    imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  } else {
+    imageUrl = ''; // Or set it to a default image URL if you have one
   }
-  const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
     const food = new Food({
       name: req.body.name,
@@ -131,7 +137,7 @@ export const updateData = async (req: Request, res: Response) => {
       // Remove previous image file if it exists
       const previousImage = food.image.replace(url, "");
       const previousImagePath = `${dir}/${previousImage}`;
-      if (fs.existsSync(previousImagePath)) {
+      if (fs.existsSync(previousImagePath) && food.image) {
         fs.unlinkSync(previousImagePath);
       }
 
@@ -182,7 +188,9 @@ export const deleteData = async (req: Request, res: Response) => {
     }
     const image = food && food.image.replace(url, "") || ''
     const imagePath = `${dir}/${image}`
-    if (fs.existsSync(imagePath)) {
+    if (!food.image) {
+      return res.status(200).json({ message: 'Deleted successfully' });
+    } else if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       return res.status(200).json({ message: 'Deleted successfully' });
     } else {
