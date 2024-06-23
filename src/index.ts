@@ -1,5 +1,5 @@
 // src/index.ts
-import express, { Request, Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -10,6 +10,7 @@ import { routerComment } from './comment/comment.route';
 import { routerOurNew } from './our-new/our-new.route';
 import * as dotenv from 'dotenv';
 import { routerEmail } from './email/email';
+import { routerDrink } from './drink/drink.route';
 
 dotenv.config()
 
@@ -38,6 +39,7 @@ app.use('/gallery', routerGallery);
 app.use('/comment', routerComment);
 app.use('/our-new', routerOurNew);
 app.use('/email', routerEmail);
+app.use('/drink', routerDrink);
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
