@@ -19,15 +19,17 @@ export const readAllData = async (req: Request, res: Response) => {
 }
 
 export const createData = async (req: Request, res: Response) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'Image file is required' });
+  let imageUrl
+  if (req.file) {
+    imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  } else {
+    imageUrl = ''; // Or set it to a default image URL if you have one
   }
-  const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   try {
     const drink = new Drink({
       image: imageUrl,
       name: req.body.name,
-      drinks: req.body.drinks,
+      drinks: JSON.parse(req.body.drinks),
     });
     const newFood = await drink.save();
     res.status(201).json(newFood);
@@ -58,6 +60,9 @@ export const updateData = async (req: Request, res: Response) => {
     if (req.body.name !== undefined) {
       drink.name = req.body.name;
     }
+    if (req.body.drinks !== undefined) {
+      drink.drinks = JSON.parse(req.body.drinks);
+    }
     const updatedFood = await drink.save();
     return res.status(200).json({
       status: 200,
@@ -80,7 +85,9 @@ export const deleteData = async (req: Request, res: Response) => {
     }
     const image = drink && drink.image.replace(url, "") || ''
     const imagePath = `${dir}/${image}`
-    if (fs.existsSync(imagePath)) {
+    if (!drink.image) {
+      return res.status(200).json({ message: 'Deleted successfully' });
+    } else if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       return res.status(200).json({ message: 'Deleted successfully' });
     } else {
