@@ -51,9 +51,11 @@ export const updateData = async (req: Request, res: Response) => {
       // Remove previous image file if it exists
       const previousImage = drink.image.replace(url, "");
       const previousImagePath = `${dir}/${previousImage}`;
-      if (fs.existsSync(previousImagePath)) {
+      if (fs.existsSync(previousImagePath) && drink.image) {
         fs.unlinkSync(previousImagePath);
       }
+
+      // Update the image URL
       drink.image = url + req.file.filename;
     }
 
